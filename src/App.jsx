@@ -707,11 +707,7 @@ function App() {
             <button className="btn btn--ghost btn--sm" onClick={() => setShowWiki(true)} style={{ marginRight: 8 }}>
               Leyenda
             </button>
-            {STATIC_GITHUB_TOKEN && (
-              <span className="badge badge--success" style={{ marginRight: 8, fontSize: '0.75rem' }}>
-                Token Estático Activo
-              </span>
-            )}
+
             <button
               className={`btn btn--primary ${syncing ? 'btn--spinning' : ''}`}
               onClick={handleSync}
