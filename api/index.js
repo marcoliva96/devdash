@@ -81,7 +81,6 @@ app.get('/api/github/repos', requireAuth, async (req, res) => {
             defaultBranch: repo.default_branch,
             stargazersCount: repo.stargazers_count,
             topics: repo.topics || [],
-            homepage: repo.homepage,
         }));
 
         res.json({ repos: mapped });

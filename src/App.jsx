@@ -571,9 +571,9 @@ function App() {
       'llibre-2',
       'modelsproces_project',
       'weather underground',
+      'weather-underground',
       'practica1',
-      'packt-pub',
-      'weather-underground'
+      'packt-pub'
     ];
     if (BLACKLIST.includes(p.name.toLowerCase())) return false;
 
