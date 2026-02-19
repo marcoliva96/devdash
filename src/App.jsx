@@ -572,7 +572,8 @@ function App() {
       'modelsproces_project',
       'weather underground',
       'practica1',
-      'packt-pub'
+      'packt-pub',
+      'weather-underground'
     ];
     if (BLACKLIST.includes(p.name.toLowerCase())) return false;
 

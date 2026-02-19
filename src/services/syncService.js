@@ -51,6 +51,14 @@ export async function syncGitHub(username) {
             project.isFork = repo.isFork;
             project.githubUrl = repo.htmlUrl;
             project.githubDescription = repo.description;
+            if (repo.homepage) {
+                project.deployUrl = repo.homepage;
+                // Auto-screenshot if not already set or if we want to force update (optional, but let's keep existing if valid)
+                // For now, let's update if it adheres to microurl pattern or is empty
+                if (!project.imageUrl || project.imageUrl.includes('microlink.io')) {
+                    project.imageUrl = `https://api.microlink.io/?url=${encodeURIComponent(repo.homepage)}&screenshot=true&meta=false&embed=screenshot.url`;
+                }
+            }
             project.languages = {};
             project.lastGithubSync = new Date().toISOString();
             project.githubTopics = repo.topics;
@@ -64,6 +72,8 @@ export async function syncGitHub(username) {
                 id: uuidv4(),
                 name: repo.name,
                 description: '',
+                deployUrl: repo.homepage || null,
+                imageUrl: repo.homepage ? `https://api.microlink.io/?url=${encodeURIComponent(repo.homepage)}&screenshot=true&meta=false&embed=screenshot.url` : null,
                 githubUrl: repo.htmlUrl,
                 githubRepoName: repo.name,
                 localPath: null,

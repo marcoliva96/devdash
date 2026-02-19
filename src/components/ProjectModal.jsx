@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
-    X, Github, ExternalLink, FolderOpen, Save, GitCommit, Clock, Plus
+    X, Github, ExternalLink, FolderOpen, Save, GitCommit, Clock, Plus, RefreshCw
 } from 'lucide-react';
 import * as githubService from '../services/githubService';
 import { TECH_COLORS } from '../utils/constants';
@@ -51,18 +51,29 @@ export default function ProjectModal({
         setData(prev => ({ ...prev, [field]: value }));
     };
 
-    const handleImageUpload = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+    // Generate Screenshot URL helper
+    const getScreenshotUrl = (url) => {
+        if (!url) return null;
+        return `https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=false&embed=screenshot.url`;
+    };
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            // Base64 string
-            const base64 = reader.result;
-            // Compress if needed? For now just save.
-            setData(prev => ({ ...prev, imageUrl: base64 }));
-        };
-        reader.readAsDataURL(file);
+    // Update image when deployUrl changes (if empty or already a screenshot)
+    useEffect(() => {
+        if (data.deployUrl && (!data.imageUrl || data.imageUrl.includes('microlink.io'))) {
+            // Debounce slightly to avoid rapid updates
+            const timer = setTimeout(() => {
+                setData(prev => ({ ...prev, imageUrl: getScreenshotUrl(data.deployUrl) }));
+            }, 800);
+            return () => clearTimeout(timer);
+        }
+    }, [data.deployUrl]);
+
+    const handleRefreshScreenshot = () => {
+        if (data.deployUrl) {
+            // Force refresh by adding timestamp to bust cache if needed, though microlink caches heavily.
+            // For now just re-set the URL.
+            setData(prev => ({ ...prev, imageUrl: getScreenshotUrl(data.deployUrl) }));
+        }
     };
 
     const scopes = categories.filter(c => c.categoryType === 'scope');
@@ -176,10 +187,9 @@ export default function ProjectModal({
                                                     </div>
                                                 )}
                                                 <div style={{ position: 'absolute', bottom: 8, right: 8, display: 'flex', gap: 4 }}>
-                                                    <label className="btn btn--secondary btn--sm" style={{ cursor: 'pointer', padding: '2px 8px', fontSize: '0.7rem' }}>
-                                                        Subir
-                                                        <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
-                                                    </label>
+                                                    <button className="btn btn--secondary btn--sm" onClick={handleRefreshScreenshot} title="Actualizar captura" style={{ padding: '2px 8px', fontSize: '0.7rem' }}>
+                                                        <RefreshCw size={12} style={{ marginRight: 4 }} /> Preview
+                                                    </button>
                                                     {data.imageUrl && (
                                                         <button className="btn btn--danger btn--sm" onClick={() => handleChange('imageUrl', null)} style={{ padding: '2px 6px' }}>
                                                             <X size={12} />
