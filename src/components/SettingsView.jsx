@@ -5,13 +5,14 @@ import {
 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import * as storage from '../services/storageService';
-import { GROUP_COLORS } from '../utils/constants';
+import { GROUP_COLORS, STATIC_GITHUB_TOKEN } from '../utils/constants';
 
 export default function SettingsView({
-    githubUsername: initialUsername, localPath: initialPath,
+    githubToken: initialToken, githubUsername: initialUsername, localPath: initialPath,
     categories: initialCategories, groups: initialGroups, statuses: initialStatuses,
     onSave, onClose, onCreateGroup, onDeleteGroup
 }) {
+    const [githubToken, setGithubToken] = useState(initialToken || STATIC_GITHUB_TOKEN || '');
     const [githubUsername, setGithubUsername] = useState(initialUsername || '');
     const [localPath, setLocalPath] = useState(initialPath || '');
     const [categories, setCategories] = useState([...initialCategories]);
@@ -33,7 +34,7 @@ export default function SettingsView({
     const [newStatusColor, setNewStatusColor] = useState('#3498db');
 
     const handleSaveSettings = () => {
-        onSave({ githubUsername, localPath, categories, groups, statuses });
+        onSave({ githubToken, githubUsername, localPath, categories, groups, statuses });
         onClose();
     };
 
@@ -151,6 +152,18 @@ export default function SettingsView({
                 <div className="settings-section">
                     <div className="settings-section__title">
                         <Key size={18} /> Conexión a GitHub
+                    </div>
+                    <div className="form-group">
+                        <label>Personal Access Token</label>
+                        <input
+                            type="password"
+                            value={githubToken}
+                            onChange={e => setGithubToken(e.target.value)}
+                            placeholder={STATIC_GITHUB_TOKEN || "ghp_xxxxxxxxxxxxxxxxxxxx"}
+                        />
+                        <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-tertiary)', marginTop: 4 }}>
+                            Genera un token en <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">GitHub → Settings → Tokens</a> con permiso "repo"
+                        </p>
                     </div>
                     <div className="form-group">
                         <label>Nombre de usuario GitHub</label>
@@ -300,7 +313,6 @@ export default function SettingsView({
                         </div>
                     </div>
                 ))}
-
 
                 {/* Export / Import */}
                 <div className="settings-section">
