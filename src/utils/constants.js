@@ -1,7 +1,7 @@
 export const DEFAULT_PROJECT_TYPES = [
     { id: 'type-ml', categoryType: 'projectType', value: 'ML', color: '#e17055', icon: '🤖' },
     { id: 'type-finance', categoryType: 'projectType', value: 'Finanzas', color: '#00b894', icon: '💰' },
-    { id: 'type-platform', categoryType: 'projectType', value: 'Plataforma', color: '#2d3436', icon: '🏗️' },
+    { id: 'type-platform', categoryType: 'projectType', value: 'Plataforma', color: '#e84393', icon: '🏗️' },
     { id: 'type-engineering', categoryType: 'projectType', value: 'Ingenieria', color: '#636e72', icon: '⚙️' },
     { id: 'type-music', categoryType: 'projectType', value: 'Musica', color: '#fd79a8', icon: '🎵' },
     { id: 'type-games', categoryType: 'projectType', value: 'Juegos', color: '#a29bfe', icon: '🎮' },
