@@ -9,8 +9,8 @@ import * as storage from './services/storageService';
 import * as githubService from './services/githubService';
 import * as syncService from './services/syncService';
 import {
-  DEFAULT_PROJECT_TYPES, DEFAULT_CAPABILITIES,
-  VIEW_MODES, GROUP_COLORS, DEFAULT_STATUSES, STATIC_GITHUB_TOKEN
+  DEFAULT_PROJECT_TYPES,
+  VIEW_MODES, GROUP_COLORS, DEFAULT_STATUSES
 } from './utils/constants';
 import ProjectCard from './components/ProjectCard';
 import ProjectRow from './components/ProjectRow';
@@ -187,7 +187,7 @@ function App() {
   const [showWiki, setShowWiki] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [newRepos, setNewRepos] = useState([]);
-  const [githubToken, setGithubToken] = useState(STATIC_GITHUB_TOKEN || '');
+
   const [githubUsername, setGithubUsername] = useState('marcoliva96');
   const [localPath, setLocalPath] = useState('/Users/axblue/Desktop/Repositoris');
   const [initialized, setInitialized] = useState(false);
@@ -227,7 +227,7 @@ function App() {
 
       // Init default categories
       // Force update categories to new defaults (User requested update)
-      const defaults = [...DEFAULT_PROJECT_TYPES, ...DEFAULT_CAPABILITIES];
+      const defaults = [...DEFAULT_PROJECT_TYPES];
       savedCategories = defaults;
 
       // Init default statuses if first run
@@ -358,16 +358,9 @@ function App() {
       setGroups(savedGroups.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)));
       setCategories(savedCategories);
 
-      // Use static token first, then saved, then env
-      const envToken = import.meta.env.VITE_GITHUB_TOKEN;
-      const tokenToUse = STATIC_GITHUB_TOKEN || savedToken || envToken || '';
       const usernameToUse = savedUsername || 'marcoliva96';
       const pathToUse = savedLocalPath || '/Users/axblue/Desktop/Repositoris';
 
-      if (tokenToUse) {
-        setGithubToken(tokenToUse);
-        githubService.initGitHub(tokenToUse);
-      }
       if (savedUsername) setGithubUsername(savedUsername);
       if (savedLocalPath) setLocalPath(savedLocalPath);
       if (savedViewMode) setViewMode(savedViewMode);
@@ -413,10 +406,7 @@ function App() {
 
   // Sync handler
   const handleSync = useCallback(async () => {
-    if (!githubToken) {
-      setShowSettings(true);
-      return;
-    }
+
     setSyncing(true);
     try {
       if (authToken) githubService.initGitHub(authToken);
@@ -692,7 +682,6 @@ function App() {
   if (showSettings) {
     return (
       <SettingsView
-        githubToken={githubToken}
         githubUsername={githubUsername}
         localPath={localPath}
         categories={categories}

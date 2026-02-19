@@ -11,14 +11,7 @@ export const DEFAULT_PROJECT_TYPES = [
     { id: 'type-other', categoryType: 'projectType', value: 'Otros', color: '#b2bec3', icon: '📁' },
 ];
 
-export const DEFAULT_CAPABILITIES = [
-    { id: 'cap-responsive', categoryType: 'capability', value: 'Mobile-responsive', color: '#00cec9', icon: '📐' },
-    { id: 'cap-pwa', categoryType: 'capability', value: 'PWA', color: '#6c5ce7', icon: '⚡' },
-    { id: 'cap-ssr', categoryType: 'capability', value: 'SSR', color: '#0984e3', icon: '🖥️' },
-    { id: 'cap-realtime', categoryType: 'capability', value: 'Real-time', color: '#e17055', icon: '🔄' },
-    { id: 'cap-auth', categoryType: 'capability', value: 'Auth', color: '#fdcb6e', icon: '🔐' },
-    { id: 'cap-database', categoryType: 'capability', value: 'Database', color: '#55a3e8', icon: '🗄️' },
-];
+
 
 export const TECH_COLORS = {
     JavaScript: '#f7df1e',
@@ -59,5 +52,3 @@ export const VIEW_MODES = {
     CARDS: 'cards',
     LIST: 'list',
 };
-
-export const STATIC_GITHUB_TOKEN = '';
