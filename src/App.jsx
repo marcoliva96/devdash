@@ -366,14 +366,12 @@ function App() {
       if (savedViewMode) setViewMode(savedViewMode);
       setInitialized(true);
 
-      // Auto-sync in background if token is configured
-      if (tokenToUse) {
+      // Auto-sync in background if logged in
+      if (authToken) {
         setSyncing(true);
         try {
-          // Initialize with auth token if available
-          if (authToken) {
-            githubService.initGitHub(authToken);
-          }
+          // Initialize with auth token
+          githubService.initGitHub(authToken);
 
           const result = await syncService.syncGitHub(usernameToUse);
           setProjects(result.updatedProjects.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)));
