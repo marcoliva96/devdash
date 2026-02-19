@@ -7,8 +7,8 @@ export const DEFAULT_PROJECT_TYPES = [
     { id: 'type-games', categoryType: 'projectType', value: 'Juegos', color: '#a29bfe', icon: '🎮' },
     { id: 'type-home-automation', categoryType: 'projectType', value: 'Domótica', color: '#00cec9', icon: '🏠' },
     { id: 'type-wiki', categoryType: 'projectType', value: 'Wiki/Repo', color: '#fdcb6e', icon: '📚' },
-    { id: 'type-other', categoryType: 'projectType', value: 'Otros', color: '#b2bec3', icon: '📁' },
     { id: 'type-social', categoryType: 'projectType', value: 'Social', color: '#3498db', icon: '👥' },
+    { id: 'type-other', categoryType: 'projectType', value: 'Otros', color: '#b2bec3', icon: '📁' },
 ];
 
 export const DEFAULT_CAPABILITIES = [

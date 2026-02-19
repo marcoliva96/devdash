@@ -112,7 +112,7 @@ export default function ProjectCard({ project, categories, onClick, simplified, 
                         {typeCat.icon} {typeCat.value}
                     </span>
                 )}
-                {(project.techStack || []).slice(0, 3).map(tech => (
+                {!simplified && (project.techStack || []).slice(0, 3).map(tech => (
                     <span
                         key={tech}
                         className="tag-chip"
