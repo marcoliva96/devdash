@@ -562,10 +562,30 @@ function App() {
 
   // Filter logic
   const filteredProjects = projects.filter(p => {
-    // Exclude Forks (User Request: "Quita los proyectos que no sean de mi autoría")
+    // 1. Exclude Forks
     if (p.isFork) return false;
-    // Specific blacklist
-    if (p.name.toLowerCase() === 'preconcebidoerp') return false;
+
+    // 2. Specific Blacklist (Case-insensitive)
+    const BLACKLIST = [
+      'preconcebidoerp',
+      'llibre-2',
+      'modelsproces_project',
+      'weather underground',
+      'practica1',
+      'packt-pub'
+    ];
+    if (BLACKLIST.includes(p.name.toLowerCase())) return false;
+
+    // 3. Ownership Check (Must contain githubUsername if on GitHub)
+    // If it's a "local only" project (isOnGithub=false), we keep it (unless blacklisted above).
+    // If it IS on GitHub, we check the URL for the username to ensure authorship.
+    if (p.isOnGithub && p.githubUrl) {
+      // If githubUsername is not set yet, we might fallback or skip this check?
+      // But typically it is set to 'marcoliva96'.
+      if (githubUsername && !p.githubUrl.toLowerCase().includes(githubUsername.toLowerCase())) {
+        return false;
+      }
+    }
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
