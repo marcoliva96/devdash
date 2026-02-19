@@ -220,7 +220,7 @@ function App() {
       const savedGroups = await storage.getAllGroups();
       let savedStatuses = await storage.getAllStatuses();
       let savedCategories = await storage.getAllCategories();
-      const savedToken = await storage.getAppState('githubToken');
+
       const savedUsername = await storage.getAppState('githubUsername');
       const savedLocalPath = await storage.getAppState('localPath');
       const savedViewMode = await storage.getAppState('viewMode');
@@ -426,7 +426,7 @@ function App() {
     } finally {
       setSyncing(false);
     }
-  }, [githubToken, githubUsername, localPath]);
+  }, [authToken, githubUsername, localPath]);
 
   // Save project
   const handleSaveProject = useCallback(async (project) => {
@@ -623,11 +623,7 @@ function App() {
 
   // Settings callbacks
   const handleSettingsSave = useCallback(async (settings) => {
-    if (settings.githubToken !== undefined) {
-      await storage.setAppState('githubToken', settings.githubToken);
-      setGithubToken(settings.githubToken);
-      // githubService.initGitHub(settings.githubToken); // No longer using direct PAT
-    }
+
     if (settings.githubUsername !== undefined) {
       await storage.setAppState('githubUsername', settings.githubUsername);
       setGithubUsername(settings.githubUsername);
