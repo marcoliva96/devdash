@@ -188,7 +188,7 @@ function App() {
   const [syncing, setSyncing] = useState(false);
   const [newRepos, setNewRepos] = useState([]);
   const [githubToken, setGithubToken] = useState(STATIC_GITHUB_TOKEN || '');
-  const [githubUsername, setGithubUsername] = useState('marcoliva96');
+  const [githubUsername, setGithubUsername] = useState('oli');
   const [localPath, setLocalPath] = useState('/Users/axblue/Desktop/Repositoris');
   const [initialized, setInitialized] = useState(false);
 
@@ -361,7 +361,7 @@ function App() {
       // Use static token first, then saved, then env
       const envToken = import.meta.env.VITE_GITHUB_TOKEN;
       const tokenToUse = STATIC_GITHUB_TOKEN || savedToken || envToken || '';
-      const usernameToUse = savedUsername || 'marcoliva96';
+      const usernameToUse = savedUsername || 'oli';
       const pathToUse = savedLocalPath || '/Users/axblue/Desktop/Repositoris';
 
       if (tokenToUse) {
@@ -717,6 +717,30 @@ function App() {
             DevDash
           </div>
           <div className="app-header__actions">
+            <div className="search-input" style={{ marginRight: 8 }}>
+              <Search size={16} className="search-input__icon" />
+              <input
+                placeholder="Buscar proyectos..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <div className="view-toggle" style={{ marginRight: 16 }}>
+              <button
+                className={`view-toggle__btn ${viewMode === VIEW_MODES.CARDS ? 'active' : ''}`}
+                onClick={() => setViewMode(VIEW_MODES.CARDS)}
+                title="Vista fichas"
+              >
+                <LayoutGrid size={16} />
+              </button>
+              <button
+                className={`view-toggle__btn ${viewMode === VIEW_MODES.LIST ? 'active' : ''}`}
+                onClick={() => setViewMode(VIEW_MODES.LIST)}
+                title="Vista lista"
+              >
+                <List size={16} />
+              </button>
+            </div>
             <button className="btn btn--ghost btn--sm" onClick={() => setShowWiki(true)} style={{ marginRight: 8 }}>
               Leyenda
             </button>
@@ -747,38 +771,6 @@ function App() {
           {newRepos.length > 0 && (
             <NewReposBanner repos={newRepos} onDismiss={() => setNewRepos([])} />
           )}
-
-          {/* Toolbar */}
-          <div className="toolbar">
-            <div className="toolbar__left">
-              <div className="search-input">
-                <Search size={16} className="search-input__icon" />
-                <input
-                  placeholder="Buscar proyectos..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="toolbar__right">
-              <div className="view-toggle">
-                <button
-                  className={`view-toggle__btn ${viewMode === VIEW_MODES.CARDS ? 'active' : ''}`}
-                  onClick={() => setViewMode(VIEW_MODES.CARDS)}
-                  title="Vista fichas"
-                >
-                  <LayoutGrid size={16} />
-                </button>
-                <button
-                  className={`view-toggle__btn ${viewMode === VIEW_MODES.LIST ? 'active' : ''}`}
-                  onClick={() => setViewMode(VIEW_MODES.LIST)}
-                  title="Vista lista"
-                >
-                  <List size={16} />
-                </button>
-              </div>
-            </div>
-          </div>
 
           {/* Filter bar */}
           <div className="filter-bar">

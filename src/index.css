@@ -57,6 +57,8 @@
 /* Simplified Card */
 .project-card.simplified {
   padding: var(--space-sm);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  box-shadow: var(--shadow-sm);
 }
 
 .project-card.simplified .project-card__header {
