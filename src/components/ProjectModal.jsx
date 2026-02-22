@@ -153,13 +153,14 @@ export default function ProjectModal({
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingBottom: 16 }}>
 
                                 {/* 1. Description (Full width) */}
-                                <div className="form-group">
+                                <div className="form-group" style={{ marginBottom: '8px' }}>
                                     <label>Descripción</label>
                                     <textarea
                                         value={data.description || ''}
                                         onChange={e => handleChange('description', e.target.value)}
                                         placeholder="Describe brevemente qué hace este proyecto..."
-                                        rows={1}
+                                        rows={2}
+                                        style={{ minHeight: '60px', height: '60px' }}
                                     />
                                 </div>
 
