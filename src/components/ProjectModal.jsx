@@ -14,6 +14,9 @@ export default function ProjectModal({
     const [commits, setCommits] = useState(project.commitHistory || []);
     const [loadingCommits, setLoadingCommits] = useState(false);
 
+    // Child projects
+    const childProjects = allProjects.filter(p => p.parentId === project.id);
+
     // Auto-save effect
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -130,11 +133,17 @@ export default function ProjectModal({
                 </div>
 
                 {/* Tabs */}
-                <div className="tabs" style={{ padding: '0 var(--space-xl)' }}>
+                <div className="tabs" style={{ padding: '0 var(--space-xl)', overflowX: 'auto', whiteSpace: 'nowrap', display: 'flex', gap: 16 }}>
                     <button className={`tab ${activeTab === 'info' ? 'active' : ''}`} onClick={() => setActiveTab('info')}>Detalles</button>
                     <button className={`tab ${activeTab === 'timeline' ? 'active' : ''}`} onClick={() => setActiveTab('timeline')}>
                         Cronología {commits.length > 0 && `(${commits.length})`}
                     </button>
+                    {childProjects.map(child => (
+                        <button key={`child-${child.id}`} className={`tab ${activeTab === `child-${child.id}` ? 'active' : ''}`} onClick={() => setActiveTab(`child-${child.id}`)}>
+                            <span className={child.isOnGithub ? "status-dot status-dot--green" : "status-dot status-dot--red"} style={{ marginRight: 6 }} />
+                            {child.name}
+                        </button>
+                    ))}
                 </div>
 
                 <div className="modal__body">
@@ -304,6 +313,58 @@ export default function ProjectModal({
                                 </div>
                             )}
                         </>
+                    )}
+
+                    {/* CHILD PROJECT TABS */}
+                    {activeTab.startsWith('child-') && (
+                        <div style={{ paddingBottom: 16 }}>
+                            {(() => {
+                                const childId = activeTab.split('child-')[1];
+                                const child = childProjects.find(c => c.id === childId);
+                                if (!child) return <div>Proyecto no encontrado</div>;
+
+                                return (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <h3 style={{ margin: 0 }}>{child.name}</h3>
+                                            {child.githubUrl ? (
+                                                <a href={child.githubUrl} target="_blank" rel="noopener noreferrer" className="btn btn--secondary btn--sm">
+                                                    <ExternalLink size={14} style={{ marginRight: 6 }} /> Ver en GitHub
+                                                </a>
+                                            ) : (
+                                                <span className="badge badge--no-github" style={{ fontSize: '0.7rem' }}>Solo Local</span>
+                                            )}
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Descripción</label>
+                                            <div style={{ padding: '12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', color: 'var(--text-secondary)' }}>
+                                                {child.description || 'Sin descripción'}
+                                            </div>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: 16 }}>
+                                            <div className="form-group" style={{ flex: 1 }}>
+                                                <label>Enlace al proyecto</label>
+                                                <div style={{ padding: '8px 12px', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px' }}>
+                                                    {child.deployUrl ? <a href={child.deployUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-primary)', textDecoration: 'none' }}>{child.deployUrl}</a> : <span style={{ color: 'var(--text-tertiary)' }}>Sin enlace</span>}
+                                                </div>
+                                            </div>
+                                            <div className="form-group" style={{ flex: 1 }}>
+                                                <label>Tecnologías</label>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                                                    {(child.techStack || []).length === 0 ? <span style={{ color: 'var(--text-tertiary)' }}>—</span> : (child.techStack || []).map(tech => (
+                                                        <span key={tech} className="tag-chip" style={{ borderColor: TECH_COLORS[tech] || '#6b7280', color: TECH_COLORS[tech] || '#9ca3b0', fontSize: '0.7rem', padding: '1px 6px' }}>{tech}</span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+                                            {/* Here we can pass the logic to actually select the child project on the main app state, but since this is just a quick viewer within the parent modal, displaying read-only info is safer to avoid recursive edit complexities.*/}
+                                            <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>Abre este proyecto directamente desde la vista principal para editarlo, o modifícalo cambiando a su ficha externa si es desvinculado.</span>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+                        </div>
                     )}
                 </div>
             </div>
