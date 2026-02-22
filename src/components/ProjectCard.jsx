@@ -33,7 +33,6 @@ export default function ProjectCard({ project, categories, onClick, simplified, 
         { key: 'check_ios', icon: <div style={{ fontSize: 10, fontWeight: 700 }}>iOS</div>, label: 'iOS' },
         { key: 'check_vercel', icon: <Cloud size={14} />, label: 'Vercel' },
         { key: 'check_multiusuario', icon: <Users size={14} />, label: 'Multiusuario' },
-        { key: 'check_publico', icon: <Globe size={14} />, label: 'Público' },
     ];
 
     return (
@@ -171,6 +170,31 @@ export default function ProjectCard({ project, categories, onClick, simplified, 
                 </div>
                 {/* Date removed to save space for icons? Or keep it? User didn't say remove it. */}
             </div>
+
+            {/* Child Projects UI Block */}
+            {!simplified && project.children && project.children.length > 0 && (
+                <div style={{ marginTop: 12, borderTop: '1px solid var(--border-subtle)', paddingTop: 8 }}>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)', marginBottom: 4 }}>Sub-proyectos ({project.children.length})</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        {project.children.map(child => (
+                            <div
+                                key={child.id}
+                                style={{
+                                    display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.75rem',
+                                    padding: '4px 6px', backgroundColor: 'var(--bg-secondary)', borderRadius: 4, cursor: 'pointer'
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onClick(child);
+                                }}
+                            >
+                                <span className={child.isOnGithub ? "status-dot status-dot--green" : "status-dot status-dot--red"} />
+                                <span>{child.name}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

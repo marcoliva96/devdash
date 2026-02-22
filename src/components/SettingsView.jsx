@@ -9,14 +9,13 @@ import { GROUP_COLORS, STATIC_GITHUB_TOKEN } from '../utils/constants';
 
 export default function SettingsView({
     githubToken: initialToken, githubUsername: initialUsername, localPath: initialPath,
-    categories: initialCategories, groups: initialGroups, statuses: initialStatuses,
-    onSave, onClose, onCreateGroup, onDeleteGroup
+    categories: initialCategories, statuses: initialStatuses,
+    onSave, onClose
 }) {
     const [githubToken, setGithubToken] = useState(initialToken || STATIC_GITHUB_TOKEN || '');
     const [githubUsername, setGithubUsername] = useState(initialUsername || '');
     const [localPath, setLocalPath] = useState(initialPath || '');
     const [categories, setCategories] = useState([...initialCategories]);
-    const [groups, setGroups] = useState([...initialGroups]);
     const [statuses, setStatuses] = useState([...(initialStatuses || [])]);
 
     // New category inputs
@@ -25,8 +24,7 @@ export default function SettingsView({
     const [newCatIcon, setNewCatIcon] = useState('');
     const [newCatColor, setNewCatColor] = useState('#6c5ce7');
 
-    // New group
-    const [newGroupName, setNewGroupName] = useState('');
+
 
     // New status
     const [newStatusValue, setNewStatusValue] = useState('');
@@ -34,7 +32,7 @@ export default function SettingsView({
     const [newStatusColor, setNewStatusColor] = useState('#3498db');
 
     const handleSaveSettings = () => {
-        onSave({ githubToken, githubUsername, localPath, categories, groups, statuses });
+        onSave({ githubToken, githubUsername, localPath, categories, statuses });
         onClose();
     };
 
@@ -60,20 +58,6 @@ export default function SettingsView({
         await storage.deleteCategory(id);
     };
 
-    const addGroup = async (name) => {
-        // Support both direct call and event
-        const groupName = typeof name === 'string' ? name : newGroupName;
-        if (!groupName || !groupName.trim()) return;
-
-        const group = await onCreateGroup(groupName.trim());
-        setGroups(prev => [...prev, group]);
-        setNewGroupName('');
-    };
-
-    const removeGroup = async (id) => {
-        await onDeleteGroup(id);
-        setGroups(prev => prev.filter(g => g.id !== id));
-    };
 
     const addStatus = () => {
         if (!newStatusValue.trim()) return;
@@ -128,7 +112,6 @@ export default function SettingsView({
     };
 
     const categoryTypes = [
-        { key: 'scope', label: '🎯 Ámbito', icon: Shield },
         { key: 'projectType', label: '📂 Tipo de Proyecto', icon: Layers },
     ];
 
@@ -193,36 +176,7 @@ export default function SettingsView({
                     </div>
                 </div>
 
-                {/* Groups */}
-                <div className="settings-section">
-                    <div className="settings-section__title">
-                        <Users size={18} /> Grupos de Proyectos
-                    </div>
-                    <div className="category-list">
-                        {groups.map(g => (
-                            <div key={g.id} className="category-item">
-                                <div className="category-item__left">
-                                    <span className="category-item__color" style={{ background: g.color }} />
-                                    {g.name}
-                                </div>
-                                <button className="btn btn--ghost btn--icon btn--sm" onClick={() => removeGroup(g.id)}>
-                                    <Trash2 size={14} />
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="add-category-row">
-                        <input
-                            value={newGroupName}
-                            onChange={e => setNewGroupName(e.target.value)}
-                            placeholder="Nombre del nuevo grupo..."
-                            onKeyDown={e => e.key === 'Enter' && addGroup()}
-                        />
-                        <button className="btn btn--secondary btn--sm" onClick={addGroup}>
-                            <Plus size={14} /> Crear
-                        </button>
-                    </div>
-                </div>
+
 
                 {/* Statuses */}
                 <div className="settings-section">

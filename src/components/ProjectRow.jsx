@@ -27,9 +27,16 @@ export default function ProjectRow({ project, categories, statuses, onClick }) {
                 <GripVertical size={14} style={{ color: 'var(--text-tertiary)' }} />
             </td>
             <td>
-                <div className="table-name-cell">
-                    {project.isNew && <span className="badge badge--new" style={{ fontSize: '0.6rem' }}>NEW</span>}
-                    <span style={{ fontWeight: 500 }}>{project.name}</span>
+                <div className="table-name-cell" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        {project.isNew && <span className="badge badge--new" style={{ fontSize: '0.6rem' }}>NEW</span>}
+                        <span style={{ fontWeight: 500 }}>{project.name}</span>
+                    </div>
+                    {project.children && project.children.length > 0 && (
+                        <div style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)' }}>
+                            ↳ {project.children.length} sub-proyectos
+                        </div>
+                    )}
                 </div>
             </td>
             <td style={{ color: 'var(--text-secondary)', maxWidth: 250, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

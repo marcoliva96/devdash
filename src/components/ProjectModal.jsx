@@ -7,7 +7,7 @@ import { TECH_COLORS } from '../utils/constants';
 import TriStateToggle from './TriStateToggle';
 
 export default function ProjectModal({
-    project, categories, statuses, groups, onSave, onClose, githubUsername
+    project, categories, statuses, allProjects, onSave, onClose, githubUsername
 }) {
     const [data, setData] = useState({ ...project });
     const [activeTab, setActiveTab] = useState('info');
@@ -85,7 +85,6 @@ export default function ProjectModal({
         { key: 'check_ios', label: 'iOS' },
         { key: 'check_vercel', label: 'Vercel' },
         { key: 'check_multiusuario', label: 'Multiusuario' },
-        { key: 'check_publico', label: 'Público' },
     ];
 
     return (
@@ -236,13 +235,13 @@ export default function ProjectModal({
                                             </div>
                                         </div>
 
-                                        {/* Group assignment */}
+                                        {/* Parent assignment */}
                                         <div className="form-group">
-                                            <label>Grupo</label>
-                                            <select value={data.groupId || ''} onChange={e => handleChange('groupId', e.target.value || null)}>
-                                                <option value="">Sin grupo</option>
-                                                {groups.map(g => (
-                                                    <option key={g.id} value={g.id}>{g.name}</option>
+                                            <label>Proyecto Padre</label>
+                                            <select value={data.parentId || ''} onChange={e => handleChange('parentId', e.target.value || null)}>
+                                                <option value="">Ninguno (Proyecto Principal)</option>
+                                                {allProjects.filter(p => p.id !== data.id && !p.parentId).map(p => (
+                                                    <option key={p.id} value={p.id}>{p.name}</option>
                                                 ))}
                                             </select>
                                         </div>

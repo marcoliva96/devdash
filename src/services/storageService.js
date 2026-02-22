@@ -5,7 +5,6 @@ const DB_VERSION = 1;
 
 const STORES = {
     projects: 'projects',
-    groups: 'groups',
     categories: 'categories',
     appState: 'appState',
 };
@@ -15,9 +14,6 @@ async function getDB() {
         upgrade(db) {
             if (!db.objectStoreNames.contains(STORES.projects)) {
                 db.createObjectStore(STORES.projects, { keyPath: 'id' });
-            }
-            if (!db.objectStoreNames.contains(STORES.groups)) {
-                db.createObjectStore(STORES.groups, { keyPath: 'id' });
             }
             if (!db.objectStoreNames.contains(STORES.categories)) {
                 db.createObjectStore(STORES.categories, { keyPath: 'id' });
@@ -101,19 +97,6 @@ export async function deleteProject(id) {
     return deleteItem(STORES.projects, id);
 }
 
-// Groups
-export async function getAllGroups() {
-    return getAll(STORES.groups);
-}
-
-export async function saveGroup(group) {
-    return put(STORES.groups, group);
-}
-
-export async function deleteGroup(id) {
-    return deleteItem(STORES.groups, id);
-}
-
 // Categories
 export async function getAllCategories() {
     return getAll(STORES.categories);
@@ -143,12 +126,11 @@ export async function deleteStatus(id) {
 // Export all data
 export async function exportAllData() {
     const projects = await getAllProjects();
-    const groups = await getAllGroups();
     const categories = await getAllCategories();
     const statuses = await getAllStatuses();
     const db = await getDB();
     const appStates = await db.getAll(STORES.appState);
-    return { projects, groups, categories, statuses, appState: appStates };
+    return { projects, categories, statuses, appState: appStates };
 }
 
 // Import all data
@@ -156,10 +138,6 @@ export async function importAllData(data) {
     if (data.projects) {
         await clearStore(STORES.projects);
         await putAll(STORES.projects, data.projects);
-    }
-    if (data.groups) {
-        await clearStore(STORES.groups);
-        await putAll(STORES.groups, data.groups);
     }
     if (data.categories) {
         await clearStore(STORES.categories);

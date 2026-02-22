@@ -75,7 +75,7 @@ export async function syncGitHub(username) {
                 techStack: repo.language ? [repo.language] : [],
                 projectType: '',
                 capabilities: [],
-                groupId: null,
+                parentId: null,
                 sortOrder: maxOrder + 1,
                 lastGithubSync: new Date().toISOString(),
                 createdAt: new Date().toISOString(),
@@ -163,7 +163,7 @@ export async function syncLocalFolder(directoryPath) {
                 techStack: [],
                 projectType: '',
                 capabilities: [],
-                groupId: null,
+                parentId: null,
                 sortOrder: maxOrder + unmatched.length + 1,
                 lastGithubSync: null,
                 createdAt: new Date().toISOString(),
@@ -178,7 +178,6 @@ export async function syncLocalFolder(directoryPath) {
                 check_ios: null,
                 check_vercel: null,
                 check_multiusuario: null,
-                check_publico: null,
             };
             await storage.saveProject(newProject);
             unmatched.push(newProject);

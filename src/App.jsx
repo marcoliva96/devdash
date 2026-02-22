@@ -17,7 +17,6 @@ import ProjectRow from './components/ProjectRow';
 import ProjectModal from './components/ProjectModal';
 import SettingsView from './components/SettingsView';
 import NewReposBanner from './components/NewReposBanner';
-import GroupSection from './components/GroupSection';
 import StatusColumn from './components/StatusColumn';
 import Login from './components/Login';
 
@@ -125,7 +124,7 @@ const MIGRATION_DATA = {
   },
   'marc-oliva-portfolio': {
     description: "Portfoli personal professional.",
-    check_responsive: true, check_vercel: true, check_publico: true
+    check_responsive: true, check_vercel: true
   },
   'metroflog-app': {
     description: "Rèplica de la xarxa social Metroflog.",
@@ -145,7 +144,7 @@ const MIGRATION_DATA = {
   },
   'simpsons': {
     description: "Web de fans dels Simpson.",
-    check_responsive: true, check_publico: true
+    check_responsive: true
   },
   'spotifyplayer': {
     description: "Reproductor web de Spotify personalitzat.",
@@ -161,26 +160,25 @@ const MIGRATION_DATA = {
   },
   'violiva_web': {
     description: "Web corporativa de Violiva.",
-    check_responsive: true, check_publico: true
+    check_responsive: true
   },
   'wavelength-catalan': {
     description: "Joc de taula Wavelength en català.",
-    check_responsive: true, check_multiusuario: true, check_vercel: true, check_publico: true
+    check_responsive: true, check_multiusuario: true, check_vercel: true
   }
 };
 
 function App() {
   const [projects, setProjects] = useState([]);
   const [statuses, setStatuses] = useState([]);
-  const [groups, setGroups] = useState([]);
   const [categories, setCategories] = useState([]);
   const [viewMode, setViewMode] = useState(VIEW_MODES.CARDS);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState({
-    projectType: null, groupId: null, tag: null,
+    projectType: null, parentId: null, tag: null,
     // Boolean filters (null = ignore, true = must have)
     check_pc: null, check_responsive: null, check_android: null, check_ios: null,
-    check_vercel: null, check_multiusuario: null, check_publico: null, check_agent: null
+    check_vercel: null, check_multiusuario: null, check_agent: null
   });
   const [selectedProject, setSelectedProject] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
@@ -217,7 +215,6 @@ function App() {
   useEffect(() => {
     async function init() {
       const savedProjects = await storage.getAllProjects();
-      const savedGroups = await storage.getAllGroups();
       let savedStatuses = await storage.getAllStatuses();
       let savedCategories = await storage.getAllCategories();
       const savedToken = await storage.getAppState('githubToken');
@@ -297,7 +294,7 @@ function App() {
           changed = true;
         }
         // Also ensure new schema fields exist
-        const booleanFields = ['check_pc', 'check_responsive', 'check_android', 'check_ios', 'check_vercel', 'check_multiusuario', 'check_publico'];
+        const booleanFields = ['check_pc', 'check_responsive', 'check_android', 'check_ios', 'check_vercel', 'check_multiusuario'];
         for (const field of booleanFields) {
           // User requested ALL to be null. Force reset.
           // To allow saving later, we should probably check a flag, but since the user
@@ -355,7 +352,6 @@ function App() {
       });
 
       setStatuses(savedStatuses);
-      setGroups(savedGroups.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)));
       setCategories(savedCategories);
 
       // Use static token first, then saved, then env
@@ -598,10 +594,10 @@ function App() {
 
     // Project Type filter
     if (activeFilters.projectType && p.projectType !== activeFilters.projectType) return false;
-    if (activeFilters.groupId && p.groupId !== activeFilters.groupId) return false;
+    if (activeFilters.parentId && p.parentId !== activeFilters.parentId) return false;
 
     // Boolean Filters (Active = Must be TRUE)
-    const bools = ['check_pc', 'check_responsive', 'check_android', 'check_ios', 'check_vercel', 'check_multiusuario', 'check_publico', 'check_agent'];
+    const bools = ['check_pc', 'check_responsive', 'check_android', 'check_ios', 'check_vercel', 'check_multiusuario', 'check_agent'];
     for (const b of bools) {
       if (activeFilters[b] === true && !p[b]) return false;
     }
@@ -609,12 +605,13 @@ function App() {
     return true;
   });
 
-  // Group projects
-  const ungrouped = filteredProjects.filter(p => !p.groupId);
-  const grouped = groups.map(g => ({
-    ...g,
-    projects: filteredProjects.filter(p => p.groupId === g.id),
-  })).filter(g => g.projects.length > 0);
+  // We now consider a project "primary" if it does not have a parent.
+  const primaryProjects = filteredProjects.filter(p => !p.parentId);
+  // We attach children to primary projects
+  const projectsWithChildren = primaryProjects.map(parent => ({
+    ...parent,
+    children: filteredProjects.filter(p => p.parentId === parent.id)
+  }));
 
   const toggleFilter = (key, value) => {
     setActiveFilters(prev => ({
@@ -651,39 +648,12 @@ function App() {
     if (settings.categories) {
       setCategories(settings.categories);
     }
-    if (settings.groups) {
-      setGroups(settings.groups);
-    }
     if (settings.statuses) {
       setStatuses(settings.statuses);
     }
   }, []);
 
-  // Group management
-  const handleCreateGroup = useCallback(async (name) => {
-    const group = {
-      id: crypto.randomUUID(),
-      name,
-      description: '',
-      sortOrder: groups.length,
-      color: GROUP_COLORS[groups.length % GROUP_COLORS.length],
-    };
-    await storage.saveGroup(group);
-    setGroups(prev => [...prev, group]);
-    return group;
-  }, [groups]);
 
-  const handleDeleteGroup = useCallback(async (id) => {
-    // Ungroup all projects
-    const toUpdate = projects.filter(p => p.groupId === id).map(p => ({ ...p, groupId: null }));
-    for (const p of toUpdate) {
-      await storage.saveProject(p);
-    }
-    await storage.deleteGroup(id);
-    setGroups(prev => prev.filter(g => g.id !== id));
-    const all = await storage.getAllProjects();
-    setProjects(all.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)));
-  }, [projects]);
 
   if (!authToken) {
     return <Login onLogin={handleLogin} />;
@@ -697,11 +667,8 @@ function App() {
         localPath={localPath}
         categories={categories}
         statuses={statuses}
-        groups={groups}
         onSave={handleSettingsSave}
         onClose={() => setShowSettings(false)}
-        onCreateGroup={handleCreateGroup}
-        onDeleteGroup={handleDeleteGroup}
       />
     );
   }
@@ -783,7 +750,6 @@ function App() {
               { key: 'check_ios', icon: <span style={{ fontSize: 9, fontWeight: 700 }}>iOS</span>, label: 'iOS' },
               { key: 'check_vercel', icon: <Cloud size={12} />, label: 'Vercel' },
               { key: 'check_multiusuario', icon: <Users size={12} />, label: 'Multi' },
-              { key: 'check_publico', icon: <Globe size={12} />, label: 'Público' },
             ].map(f => (
               <button
                 key={f.key}
@@ -838,7 +804,7 @@ function App() {
               {viewMode === VIEW_MODES.CARDS ? (
                 <div className="board-container">
                   {statuses.map(status => {
-                    const statusProjects = filteredProjects.filter(p => p.status === status.value);
+                    const statusProjects = projectsWithChildren.filter(p => p.status === status.value);
                     return (
                       <StatusColumn
                         key={status.id}
@@ -870,7 +836,7 @@ function App() {
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredProjects.map(project => (
+                        {projectsWithChildren.map(project => (
                           <ProjectRow
                             key={project.id}
                             project={project}
@@ -894,7 +860,7 @@ function App() {
             project={selectedProject}
             categories={categories}
             statuses={statuses}
-            groups={groups}
+            allProjects={projects}
             onSave={handleSaveProject}
             onClose={() => setSelectedProject(null)}
             githubUsername={githubUsername}
