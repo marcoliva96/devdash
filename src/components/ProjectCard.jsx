@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { TECH_COLORS } from '../utils/constants';
 
-export default function ProjectCard({ project, categories, onClick, simplified, statusObj }) {
+export default function ProjectCard({ project, categories, onClick, simplified, statusObj, isCompact }) {
     const {
         attributes, listeners, setNodeRef, transform, transition, isDragging,
     } = useSortable({
@@ -43,7 +43,7 @@ export default function ProjectCard({ project, categories, onClick, simplified, 
             onClick={onClick}
         >
             {/* Project Image */}
-            {project.imageUrl && (
+            {!isCompact && project.imageUrl && (
                 <div style={{
                     height: 120,
                     backgroundImage: `url(${project.imageUrl})`,
@@ -126,50 +126,51 @@ export default function ProjectCard({ project, categories, onClick, simplified, 
             </div>
 
             {/* Footer containing Boolean Icons & Links */}
-            <div className="project-card__footer">
-                <div className="project-card__footer-links">
-                    {/* Links */}
-                    {project.githubUrl && (
-                        <a
-                            href={project.githubUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={e => e.stopPropagation()}
-                            title="Ver en GitHub"
-                            style={{ marginRight: 8 }}
-                        >
-                            <Github size={14} />
-                        </a>
-                    )}
-                    {project.localPath && (
-                        <span title={project.localPath} style={{ color: 'var(--text-tertiary)', marginRight: 12 }}>
-                            <FolderOpen size={14} />
-                        </span>
-                    )}
-
-                    {/* Boolean Icons (Only non-null) */}
-                    {booleanIcons.map(item => {
-                        const val = project[item.key];
-                        if (val === null || val === undefined) return null;
-                        return (
-                            <span
-                                key={item.key}
-                                title={`${item.label}: ${val ? 'Sí' : 'No'}`}
-                                style={{
-                                    color: val ? 'var(--accent-secondary)' : 'var(--accent-danger)',
-                                    opacity: val ? 1 : 0.5,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    marginRight: 6
-                                }}
+            {!isCompact && (
+                <div className="project-card__footer">
+                    <div className="project-card__footer-links">
+                        {/* Links */}
+                        {project.githubUrl && (
+                            <a
+                                href={project.githubUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={e => e.stopPropagation()}
+                                title="Ver en GitHub"
+                                style={{ marginRight: 8 }}
                             >
-                                {item.icon}
+                                <Github size={14} />
+                            </a>
+                        )}
+                        {project.localPath && (
+                            <span title={project.localPath} style={{ color: 'var(--text-tertiary)', marginRight: 12 }}>
+                                <FolderOpen size={14} />
                             </span>
-                        );
-                    })}
+                        )}
+
+                        {/* Boolean Icons (Only non-null) */}
+                        {booleanIcons.map(item => {
+                            const val = project[item.key];
+                            if (val === null || val === undefined) return null;
+                            return (
+                                <span
+                                    key={item.key}
+                                    title={`${item.label}: ${val ? 'Sí' : 'No'}`}
+                                    style={{
+                                        color: val ? 'var(--accent-secondary)' : 'var(--accent-danger)',
+                                        opacity: val ? 1 : 0.5,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        marginRight: 6
+                                    }}
+                                >
+                                    {item.icon}
+                                </span>
+                            );
+                        })}
+                    </div>
                 </div>
-                {/* Date removed to save space for icons? Or keep it? User didn't say remove it. */}
-            </div>
+            )}
 
             {/* Child Projects UI Block */}
             {!simplified && project.children && project.children.length > 0 && (

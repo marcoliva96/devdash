@@ -3,7 +3,7 @@ import './index.css';
 import {
   LayoutGrid, List, RefreshCw, Settings, Search, Github,
   X, ChevronDown, Plus, FolderOpen, Download, Upload, Sparkles,
-  Monitor, Smartphone, Cloud, Users, Globe, Lock, Terminal
+  Monitor, Smartphone, Cloud, Users, Globe, Lock, Terminal, Eye, EyeOff
 } from 'lucide-react';
 import * as storage from './services/storageService';
 import * as githubService from './services/githubService';
@@ -173,6 +173,7 @@ function App() {
   const [statuses, setStatuses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [viewMode, setViewMode] = useState(VIEW_MODES.CARDS);
+  const [compactCards, setCompactCards] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState({
     projectType: null, parentId: null, tag: null,
@@ -221,6 +222,7 @@ function App() {
       const savedUsername = await storage.getAppState('githubUsername');
       const savedLocalPath = await storage.getAppState('localPath');
       const savedViewMode = await storage.getAppState('viewMode');
+      const savedCompactCards = await storage.getAppState('compactCards');
 
       // Init default categories
       // Force update categories to new defaults (User requested update)
@@ -367,6 +369,7 @@ function App() {
       if (savedUsername) setGithubUsername(savedUsername);
       if (savedLocalPath) setLocalPath(savedLocalPath);
       if (savedViewMode) setViewMode(savedViewMode);
+      if (savedCompactCards !== undefined) setCompactCards(savedCompactCards);
       setInitialized(true);
 
       // Auto-sync in background if token is configured
@@ -404,8 +407,9 @@ function App() {
   useEffect(() => {
     if (initialized) {
       storage.setAppState('viewMode', viewMode);
+      storage.setAppState('compactCards', compactCards);
     }
-  }, [viewMode, initialized]);
+  }, [viewMode, compactCards, initialized]);
 
   // Sync handler
   const handleSync = useCallback(async () => {
@@ -707,6 +711,14 @@ function App() {
               >
                 <List size={16} />
               </button>
+              <div style={{ width: 1, height: 16, backgroundColor: 'var(--border-subtle)', margin: '0 4px' }} />
+              <button
+                className={`view-toggle__btn ${compactCards ? 'active' : ''}`}
+                onClick={() => setCompactCards(!compactCards)}
+                title={compactCards ? "Vista detallada" : "Vista compacta"}
+              >
+                {compactCards ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
             <button className="btn btn--ghost btn--sm" onClick={() => setShowWiki(true)} style={{ marginRight: 8 }}>
               Leyenda
@@ -811,6 +823,7 @@ function App() {
                         status={status}
                         projects={statusProjects}
                         categories={categories}
+                        isCompact={compactCards}
                         onProjectClick={setSelectedProject}
                       />
                     );

@@ -2,7 +2,7 @@ import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import ProjectCard from './ProjectCard';
 
-export default function StatusColumn({ status, projects, categories, onProjectClick }) {
+export default function StatusColumn({ status, projects, categories, isCompact, onProjectClick }) {
     const { setNodeRef } = useDroppable({
         id: status.id,
         data: {
@@ -32,6 +32,7 @@ export default function StatusColumn({ status, projects, categories, onProjectCl
                             project={project}
                             categories={categories}
                             statusObj={status}
+                            isCompact={isCompact}
                             onClick={() => onProjectClick(project)}
                             simplified={true}
                         />
