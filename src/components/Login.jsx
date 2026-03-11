@@ -47,12 +47,12 @@ export default function Login({ onLogin }) {
 
                 <form onSubmit={handleSubmit} className="login-form">
                     <div className="form-group">
-                        <label>Usuario</label>
+                        <label>Correo</label>
                         <input
-                            type="text"
+                            type="email"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            placeholder="Usuario"
+                            placeholder="Correo electrónico"
                             autoFocus
                         />
                     </div>

@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 // Hardcoded credentials for simplicity as requested
-const VALID_USER = 'oli';
+const VALID_USER = 'oli@gmail.com';
 const VALID_PASS = '251092DEV*';
 
 // POST /api/auth/login
